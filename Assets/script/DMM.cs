@@ -14,9 +14,13 @@ public class DMM : MonoBehaviour {
     float[] test_shape_dmm_, test_exp_dmm_;
     int[] unity_index_map_;
     Vector3[] vertice_base;
+    Mesh mesh;
+    Vector3[] vertices; 
     // Use this for initialization
     void Start () {
-
+        mesh = GetComponent<MeshFilter>().mesh;
+        vertices = mesh.vertices;
+        int pt_num = vertices.Length;
         mu_shape_ = new float[95823];
         mu_exp_ = new float[95823];
 
@@ -26,8 +30,8 @@ public class DMM : MonoBehaviour {
 
         test_shape_dmm_ = new float[100];
         test_exp_dmm_ = new float[79];
-        unity_index_map_ = new int[32179];
-        vertice_base = new Vector3[32179];
+        unity_index_map_ = new int[pt_num];
+        vertice_base = new Vector3[pt_num];
         LoadDMM();
         Debug.Log("Load DMM");
         LoadMean();
@@ -143,14 +147,38 @@ public class DMM : MonoBehaviour {
         }
     }
 
+    public void ChangeExpression(float[] parameter)
+    {
+        
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+
+            int index_ = unity_index_map_[i];
+            float x = vertice_base[i].x;
+            float y = vertice_base[i].y;
+            float z = vertice_base[i].z;
+            for (int j = 0; j < 79; j++)
+            {
+                x += b_exp_[j, 3 * index_] * parameter[j];
+                y += b_exp_[j, 3 * index_ + 1] * parameter[j];
+                z += b_exp_[j, 3 * index_ + 2] * parameter[j];
+            }
+            vertices[i].x = x;
+            vertices[i].y = y;
+            vertices[i].z = z;
+        }
+        mesh.vertices = vertices;
+        mesh.RecalculateBounds();
+
+    }
 
     void Test()
     {
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-        Vector3[] vertices = mesh.vertices;
+
         for (int i=0;i< vertices.Length;i++)
         {
-// Debug.Log(i);
+
             int index_ = unity_index_map_[i];
             float x = vertice_base[i].x;
             float y = vertice_base[i].y;
@@ -172,8 +200,8 @@ public class DMM : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        if (Input.GetButtonDown("Jump"))
-            Test();
+        //if (Input.GetButtonDown("Jump"))
+        //    Test();
         
     }
 }

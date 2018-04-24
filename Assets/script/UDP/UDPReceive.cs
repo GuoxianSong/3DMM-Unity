@@ -31,15 +31,17 @@ public class UDPReceive : MonoBehaviour
     // udpclient object
     UdpClient client;
 
-    // public
-    // public string IP = "127.0.0.1"; default local
-    public int port; // define > init
+
+    int port; // define > init
 
     // infos
-    public string lastReceivedUDPPacket = "";
-    public string allReceivedUDPPackets = ""; // clean up this from time to time!
+    string lastReceivedUDPPacket = "";
+    string allReceivedUDPPackets = ""; // clean up this from time to time!
 
-
+    public GameObject face;
+    DMM dmm;
+    bool update_mesh = false;
+    float[] dmm_expression = new float[79];
     // start from shell
     private static void Main()
     {
@@ -56,7 +58,7 @@ public class UDPReceive : MonoBehaviour
     // start from unity3d
     public void Start()
     {
-
+        dmm = face.GetComponent<DMM>();
         init();
     }
 
@@ -76,7 +78,6 @@ public class UDPReceive : MonoBehaviour
     // init
     private void init()
     {
-        // Endpunkt definieren, von dem die Nachrichten gesendet werden.
         print("UDPSend.init()");
 
         // define port
@@ -86,12 +87,6 @@ public class UDPReceive : MonoBehaviour
         print("Sending to 127.0.0.1 : " + port);
         print("Test-Sending to this Port: nc -u 127.0.0.1  " + port + "");
 
-
-        // ----------------------------
-        // Abhören
-        // ----------------------------
-        // Lokalen Endpunkt definieren (wo Nachrichten empfangen werden).
-        // Einen neuen Thread für den Empfang eingehender Nachrichten erstellen.
         receiveThread = new Thread(
             new ThreadStart(ReceiveData));
         receiveThread.IsBackground = true;
@@ -102,7 +97,7 @@ public class UDPReceive : MonoBehaviour
     // receive thread
     private void ReceiveData()
     {
-
+        
         client = new UdpClient(port);
         while (true)
         {
@@ -115,16 +110,13 @@ public class UDPReceive : MonoBehaviour
 
                 // Bytes mit der UTF8-Kodierung in das Textformat kodieren.
                 string text = Encoding.UTF8.GetString(data);
-
-                // Den abgerufenen Text anzeigen.
-                print(">> " + text);
-
-                // latest UDPpacket
-                lastReceivedUDPPacket = text;
-
-                // ....
-                allReceivedUDPPackets = allReceivedUDPPackets + text;
-
+                string[] parameter = text.Split(',');
+                for(int i=0;i<79;i++)
+                {
+                    dmm_expression[i] = float.Parse(parameter[i]);
+                }
+                print(">> " + text);               
+                update_mesh = true;
             }
             catch (Exception err)
             {
@@ -139,5 +131,23 @@ public class UDPReceive : MonoBehaviour
     {
         allReceivedUDPPackets = "";
         return lastReceivedUDPPacket;
+    }
+
+    void OnDisable()
+    {
+        if (receiveThread != null)
+            receiveThread.Abort();
+
+        client.Close();
+    }
+
+    private void Update()
+    {
+        if (update_mesh)
+        {
+            dmm.ChangeExpression(dmm_expression);
+            update_mesh = false;
+        }
+           
     }
 }
