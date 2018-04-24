@@ -128,17 +128,15 @@ public class DMM : MonoBehaviour {
         for (int i = 0; i < vertice_base.Length; i++)
         {
             int index_ = unity_index_map_[i];
-            float x = mu_exp_[3 * index_] + mu_exp_[3 * index_];
-            float y = mu_exp_[3 * index_ + 1] + mu_exp_[3 * index_ + 1];
-            float z = mu_exp_[3 * index_ + 2] + mu_exp_[3 * index_ + 2];
+            float x = mu_shape_[3 * index_] + mu_exp_[3 * index_];
+            float y = mu_shape_[3 * index_ + 1] + mu_exp_[3 * index_ + 1];
+            float z = mu_shape_[3 * index_ + 2] + mu_exp_[3 * index_ + 2];
             for (int j = 0; j < 100; j++)
             {
-                if (j < 100)
-                {
+
                     x += b_shape_[j, 3 * index_] * test_shape_dmm_[j];
                     y += b_shape_[j, 3 * index_ + 1] * test_shape_dmm_[j];
                     z += b_shape_[j, 3 * index_ + 2] * test_shape_dmm_[j];
-                }
 
             }
             vertice_base[i].x = x;
@@ -169,31 +167,55 @@ public class DMM : MonoBehaviour {
             vertices[i].z = z;
         }
         mesh.vertices = vertices;
+        for (int m = 0; m < mesh.subMeshCount; m++)
+        {
+            int[] triangles = mesh.GetTriangles(m);
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                int temp = triangles[i + 0];
+                triangles[i + 0] = triangles[i + 1];
+                triangles[i + 1] = temp;
+            }
+            mesh.SetTriangles(triangles, m);
+        }
+        mesh.RecalculateNormals();
         mesh.RecalculateBounds();
 
     }
 
     void Test()
     {
+        Debug.Log("test");
+        //for (int i=0;i< vertices.Length;i++)
+        //{
 
-        for (int i=0;i< vertices.Length;i++)
+        //    int index_ = unity_index_map_[i];
+        //    float x = vertice_base[i].x;
+        //    float y = vertice_base[i].y;
+        //    float z = vertice_base[i].z;
+        //    //for (int j = 0; j < 79; j++)
+        //    //{
+        //    //    x += b_exp_[j ,3 * index_] * test_exp_dmm_[j];
+        //    //    y += b_exp_[j ,3 * index_ + 1] * test_exp_dmm_[j ];
+        //    //    z += b_exp_[j ,3 * index_ + 2] * test_exp_dmm_[j ];
+        //    //}
+        //    vertices[i].x = x;
+        //    vertices[i].y = y;
+        //    vertices[i].z = z;
+        //}
+        mesh.vertices = vertice_base;
+        for (int m = 0; m < mesh.subMeshCount; m++)
         {
-
-            int index_ = unity_index_map_[i];
-            float x = vertice_base[i].x;
-            float y = vertice_base[i].y;
-            float z = vertice_base[i].z;
-            //for (int j = 0; j < 79; j++)
-            //{
-            //    x += b_exp_[j ,3 * index_] * test_exp_dmm_[j];
-            //    y += b_exp_[j ,3 * index_ + 1] * test_exp_dmm_[j ];
-            //    z += b_exp_[j ,3 * index_ + 2] * test_exp_dmm_[j ];
-            //}
-            vertices[i].x = x;
-            vertices[i].y = y;
-            vertices[i].z = z;
+            int[] triangles = mesh.GetTriangles(m);
+            for (int i = 0; i < triangles.Length; i += 3)
+            {
+                int temp = triangles[i + 0];
+                triangles[i + 0] = triangles[i + 1];
+                triangles[i + 1] = temp;
+            }
+            mesh.SetTriangles(triangles, m);
         }
-        mesh.vertices = vertices;
+        mesh.RecalculateNormals();
         mesh.RecalculateBounds();
         
     }
@@ -202,6 +224,6 @@ public class DMM : MonoBehaviour {
     void Update () {
         //if (Input.GetButtonDown("Jump"))
         //    Test();
-        
+
     }
 }
