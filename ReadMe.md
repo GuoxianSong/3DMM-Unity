@@ -1,7 +1,7 @@
 #3DMM Unity
 
 Simple example to control 3DMM face using UDP on Unity.
-![picture](example.png)
+![picture](example.PNG)
 #Pipeline
 Unity reads 3dmm basis, and set up a UDP server to receive expression parameters.
 A simple python program to send expression parameters. And the unity will received it to render the face.
