@@ -37,4 +37,17 @@ def Reverse():
                 text_file.write(line_)
             text_file.write('\n')
         text_file.closed;
-Match()
+
+
+def UDP_send():
+    import socket
+    str_=""
+    for i in range(79):
+        str_+='0,'
+    bytesToSend = str.encode(str_[:-1])
+    serverAddressPort = ("127.0.0.1", 8051)
+    UDPClientSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+    UDPClientSocket.sendto(bytesToSend, serverAddressPort)
+
+
+UDP_send()

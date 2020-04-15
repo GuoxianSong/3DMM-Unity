@@ -10,7 +10,7 @@ public class ExtractIndex : MonoBehaviour {
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         Vector3[] vertices = mesh.vertices;
 
-        using (System.IO.StreamWriter file =new System.IO.StreamWriter(@"D:\UnixFolder\3DMM UNITY\3DMM_Unity\Unity_pt.txt"))
+        using (System.IO.StreamWriter file =new System.IO.StreamWriter(@"D:\Code\3DMM-Unity\Unity_pt.txt"))
         {
             for (int i = 0; i < mesh.vertices.Length; i++)
             {
